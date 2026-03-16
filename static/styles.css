@@ -1,0 +1,70 @@
+:root {
+  --blue: #1f6feb;
+  --black: #0b0b0b;
+  --white: #ffffff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--white);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: var(--black);
+}
+
+.page {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 24px;
+  padding: 24px;
+}
+
+.toggle {
+  width: 90px;
+  height: 50px;
+  border: 2px solid var(--black);
+  border-radius: 999px;
+  background: var(--white);
+  padding: 4px;
+  position: relative;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.toggle .knob {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--blue);
+  display: block;
+  transform: translateX(0);
+  transition: transform 0.2s ease;
+}
+
+.toggle.on {
+  background: #e9f2ff;
+}
+
+.toggle.on .knob {
+  transform: translateX(40px);
+}
+
+.online {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
+  font-size: 16px;
+  color: var(--black);
+}

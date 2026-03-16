@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Shared Toggle</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+  <main class="page">
+    <button id="toggle" class="toggle" type="button" aria-pressed="false" aria-label="Shared toggle">
+      <span class="knob"></span>
+    </button>
+
+    <p id="online" class="online">0 people online</p>
+  </main>
+
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <script>
+    const socket = io();
+    const toggleEl = document.getElementById('toggle');
+    const onlineEl = document.getElementById('online');
+
+    let currentToggle = false;
+
+    function renderToggle(value) {
+      currentToggle = value;
+      toggleEl.classList.toggle('on', value);
+      toggleEl.setAttribute('aria-pressed', String(value));
+    }
+
+    function renderOnline(count) {
+      onlineEl.textContent = `${count} ${count === 1 ? 'person' : 'people'} online`;
+    }
+
+    toggleEl.addEventListener('click', () => {
+      socket.emit('set_toggle', { toggle: !currentToggle });
+    });
+
+    socket.on('state', (payload) => {
+      renderToggle(Boolean(payload.toggle));
+      renderOnline(Number(payload.online || 0));
+    });
+
+    socket.on('toggle', (payload) => {
+      renderToggle(Boolean(payload.toggle));
+    });
+
+    socket.on('online', (payload) => {
+      renderOnline(Number(payload.online || 0));
+    });
+  </script>
+</body>
+</html>
