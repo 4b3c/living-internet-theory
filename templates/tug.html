@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Living Internet Theory — Tug of War</title>
+  <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+  <div class="tug-arena" id="arena">
+    <div class="tug-fill" id="fill"></div>
+    <div class="tug-divider" id="divider"></div>
+    <span class="tug-count tug-count-red" id="red-count">0</span>
+    <span class="tug-count tug-count-blue" id="blue-count">0</span>
+  </div>
+
+  <script src="{{ url_for('static', filename='socket.io.min.js') }}"></script>
+  <script>
+    const socket = io('/tug');
+    const arena = document.getElementById('arena');
+    const fill = document.getElementById('fill');
+    const divider = document.getElementById('divider');
+    const redCount = document.getElementById('red-count');
+    const blueCount = document.getElementById('blue-count');
+
+    let mySide = null;
+
+    function render(state) {
+      const pct = (state.position * 100).toFixed(2);
+      fill.style.width = pct + '%';
+      divider.style.right = pct + '%';
+      redCount.textContent = state.red;
+      blueCount.textContent = state.blue;
+      arena.dataset.side = mySide || '';
+    }
+
+    arena.addEventListener('click', (e) => {
+      const rect = arena.getBoundingClientRect();
+      const side = e.clientX < rect.left + rect.width / 2 ? 'red' : 'blue';
+      mySide = side;
+      arena.dataset.side = mySide;
+      socket.emit('choose_side', { side });
+    });
+
+    socket.on('state', render);
+  </script>
+</body>
+</html>

@@ -1,5 +1,6 @@
 :root {
   --blue: #1f6feb;
+  --red: #e53935;
   --black: #0b0b0b;
   --white: #ffffff;
 }
@@ -18,6 +19,8 @@ body {
   color: var(--black);
 }
 
+/* ---- Directory ---- */
+
 .page {
   width: 100%;
   height: 100%;
@@ -28,6 +31,25 @@ body {
   gap: 24px;
   padding: 24px;
 }
+
+.directory {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.directory a {
+  color: var(--black);
+  text-decoration: none;
+  font-size: 20px;
+}
+
+.directory a:hover {
+  text-decoration: underline;
+}
+
+/* ---- Toggle ---- */
 
 .toggle {
   width: 90px;
@@ -67,4 +89,77 @@ body {
   margin: 0;
   font-size: 16px;
   color: var(--black);
+}
+
+@keyframes vibrate {
+  0%   { transform: translateX(0); }
+  15%  { transform: translateX(-5px); }
+  30%  { transform: translateX(5px); }
+  45%  { transform: translateX(-4px); }
+  60%  { transform: translateX(4px); }
+  75%  { transform: translateX(-2px); }
+  90%  { transform: translateX(2px); }
+  100% { transform: translateX(0); }
+}
+
+.toggle.vibrate {
+  animation: vibrate 0.35s ease;
+}
+
+/* ---- Tug of war ---- */
+
+.tug-arena {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: var(--red);
+  cursor: pointer;
+  overflow: hidden;
+  user-select: none;
+}
+
+.tug-fill {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  background: var(--blue);
+  width: 50%;
+  transition: width 1s ease;
+}
+
+.tug-divider {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 3px;
+  background: var(--white);
+  right: 50%;
+  transition: right 1s ease;
+  transform: translateX(50%);
+}
+
+.tug-count {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: clamp(48px, 10vw, 96px);
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.4);
+  pointer-events: none;
+  transition: color 0.3s ease;
+}
+
+.tug-count-red {
+  left: 5%;
+}
+
+.tug-count-blue {
+  right: 5%;
+}
+
+/* highlight your chosen side */
+.tug-arena[data-side="red"] .tug-count-red,
+.tug-arena[data-side="blue"] .tug-count-blue {
+  color: rgba(255, 255, 255, 0.9);
 }
