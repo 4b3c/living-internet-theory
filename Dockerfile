@@ -9,4 +9,4 @@ COPY . .
 
 EXPOSE 5002
 
-CMD ["gunicorn", "-w", "1", "--threads", "50", "-b", "0.0.0.0:5002", "app:app"]
+CMD ["gunicorn", "-w", "1", "-k", "eventlet", "-b", "0.0.0.0:5002", "app:app"]

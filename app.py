@@ -1,3 +1,6 @@
+import eventlet
+eventlet.monkey_patch()
+
 import os
 import time
 from collections import defaultdict
@@ -15,7 +18,7 @@ socketio = SocketIO(
         "https://living-internet-theory.com",
         "https://www.living-internet-theory.com",
     ],
-    async_mode="threading",
+    async_mode="eventlet",
 )
 
 state_lock = Lock()
