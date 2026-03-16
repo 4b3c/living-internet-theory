@@ -3,7 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Shared Toggle</title>
+  <title>Living Internet Theory</title>
+  <link rel="icon" type="image/svg+xml" id="favicon">
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
@@ -23,10 +24,15 @@
 
     let currentToggle = false;
 
+    const faviconEl = document.getElementById('favicon');
+    const FAVICON_OFF = `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect x='2' y='16' width='60' height='32' rx='16' ry='16' fill='white' stroke='%230b0b0b' stroke-width='4'/><circle cx='22' cy='32' r='11' fill='%231f6feb'/></svg>`;
+    const FAVICON_ON  = `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect x='2' y='16' width='60' height='32' rx='16' ry='16' fill='%23e9f2ff' stroke='%230b0b0b' stroke-width='4'/><circle cx='42' cy='32' r='11' fill='%231f6feb'/></svg>`;
+
     function renderToggle(value) {
       currentToggle = value;
       toggleEl.classList.toggle('on', value);
       toggleEl.setAttribute('aria-pressed', String(value));
+      faviconEl.href = value ? FAVICON_ON : FAVICON_OFF;
     }
 
     function renderOnline(count) {

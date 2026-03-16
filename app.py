@@ -29,7 +29,7 @@ state = {
 
 _rate_lock = Lock()
 _rate_limits: dict[str, float] = defaultdict(float)
-RATE_LIMIT_SECONDS = 0.5
+RATE_LIMIT_SECONDS = 0.1
 
 
 def _client_ip() -> str:
