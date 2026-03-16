@@ -1,15 +1,37 @@
-from flask import Flask, render_template
+import os
+import time
+from collections import defaultdict
+from threading import Lock
+
+from flask import Flask, render_template, request
 from flask_socketio import SocketIO, emit
 
 app = Flask(__name__)
-app.config["SECRET_KEY"] = "dev-secret"
-socketio = SocketIO(app, cors_allowed_origins="*", async_mode="threading")
+app.config["SECRET_KEY"] = os.environ["SECRET_KEY"]
 
-# Shared global state
+socketio = SocketIO(
+    app,
+    cors_allowed_origins=[
+        "https://living-internet-theory.com",
+        "https://www.living-internet-theory.com",
+    ],
+    async_mode="threading",
+)
+
+state_lock = Lock()
 state = {
     "toggle": False,
     "online": 0,
 }
+
+_rate_lock = Lock()
+_rate_limits: dict[str, float] = defaultdict(float)
+RATE_LIMIT_SECONDS = 0.5
+
+
+def _client_ip() -> str:
+    forwarded = request.environ.get("HTTP_X_FORWARDED_FOR", "")
+    return forwarded.split(",")[0].strip() if forwarded else request.remote_addr
 
 
 @app.route("/")
@@ -19,22 +41,33 @@ def index():
 
 @socketio.on("connect")
 def handle_connect():
-    state["online"] += 1
-    emit("state", {"toggle": state["toggle"], "online": state["online"]})
-    emit("online", {"online": state["online"]}, broadcast=True)
+    with state_lock:
+        state["online"] += 1
+        snapshot = dict(state)
+    emit("state", {"toggle": snapshot["toggle"], "online": snapshot["online"]})
+    emit("online", {"online": snapshot["online"]}, broadcast=True)
 
 
 @socketio.on("disconnect")
 def handle_disconnect():
-    state["online"] = max(0, state["online"] - 1)
-    emit("online", {"online": state["online"]}, broadcast=True)
+    with state_lock:
+        state["online"] = max(0, state["online"] - 1)
+        online = state["online"]
+    emit("online", {"online": online}, broadcast=True)
 
 
 @socketio.on("set_toggle")
 def handle_set_toggle(payload):
+    ip = _client_ip()
+    now = time.monotonic()
+    with _rate_lock:
+        if now - _rate_limits[ip] < RATE_LIMIT_SECONDS:
+            return
+        _rate_limits[ip] = now
     toggle_value = bool(payload.get("toggle", False))
-    state["toggle"] = toggle_value
-    emit("toggle", {"toggle": state["toggle"]}, broadcast=True)
+    with state_lock:
+        state["toggle"] = toggle_value
+    emit("toggle", {"toggle": toggle_value}, broadcast=True)
 
 
 if __name__ == "__main__":

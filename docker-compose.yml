@@ -1,0 +1,9 @@
+services:
+  web:
+    build: .
+    container_name: lit_web
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "127.0.0.1:5002:5002"

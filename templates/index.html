@@ -15,7 +15,7 @@
     <p id="online" class="online">0 people online</p>
   </main>
 
-  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <script src="{{ url_for('static', filename='socket.io.min.js') }}"></script>
   <script>
     const socket = io();
     const toggleEl = document.getElementById('toggle');
