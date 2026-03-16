@@ -42,9 +42,14 @@ def index():
     return render_template("index.html")
 
 
+MAX_USERS = 10_000
+
+
 @socketio.on("connect")
 def handle_connect():
     with state_lock:
+        if state["online"] >= MAX_USERS:
+            return False
         state["online"] += 1
         snapshot = dict(state)
     emit("state", {"toggle": snapshot["toggle"], "online": snapshot["online"]})
